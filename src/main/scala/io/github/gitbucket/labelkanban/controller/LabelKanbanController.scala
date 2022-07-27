@@ -178,7 +178,7 @@ trait labelKanbanControllerBase extends ControllerBase {
 
 
   get("/api/v3/repos/:owner/:repository/plugin/labelkanban/dataset")(referrersOnly { repository =>
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       ApiDataSetKanban(
         createApiIssueKanbans(repository),
         createLanes(repository)
@@ -197,7 +197,7 @@ trait labelKanbanControllerBase extends ControllerBase {
           countIssue(IssueSearchCondition(), IssueSearchOption.Issues, (r.owner, r.repository.repositoryName)) > 0
       )
 
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       ApiDataSetKanban(
         createSummaryApiIssueKanbans(user),
         createSummaryLanes(user)
@@ -206,7 +206,7 @@ trait labelKanbanControllerBase extends ControllerBase {
   }
 
   get("/api/v3/repos/:owner/:repository/plugin/labelkanban/issues")(referrersOnly { repository =>
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       getOpenIssues(repository.owner, repository.name).map(issue =>
         ApiIssueKanban(
           issue,
@@ -220,7 +220,7 @@ trait labelKanbanControllerBase extends ControllerBase {
   )
 
   get("/api/v3/repos/:owner/:repository/plugin/labelkanban/labels")(referrersOnly { repository =>
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       getLabels(repository.owner, repository.name)
         .sortBy(label => label.labelId)
         .map(label =>
@@ -229,7 +229,7 @@ trait labelKanbanControllerBase extends ControllerBase {
   })
 
   get("/api/v3/repos/:owner/:repository/plugin/labelkanban/milestones")(referrersOnly { repository =>
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       getMilestonesWithIssueCount(repository.owner, repository.name)
         .filter(items =>
           items._2 > 0 || items._3 == 0 || (items._1.dueDate.isDefined && items._1.dueDate.get.after(new Date)))
@@ -240,7 +240,7 @@ trait labelKanbanControllerBase extends ControllerBase {
   })
 
   get("/api/v3/repos/:owner/:repository/plugin/labelkanban/priorities")(referrersOnly { repository =>
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       getPriorities(repository.owner, repository.name)
         .reverse
         .map(priority =>
@@ -250,7 +250,7 @@ trait labelKanbanControllerBase extends ControllerBase {
   })
 
   get("/api/v3/repos/:owner/:repository/plugin/labelkanban/assignees")(referrersOnly { repository =>
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       getAssignableUserNames(repository.owner, repository.name).map(assignee =>
         ApiAssigneeKanban(assignee)(RepositoryName(repository))
       )
@@ -498,7 +498,7 @@ trait labelKanbanControllerBase extends ControllerBase {
   def getApiIssue(issueId: Int, repository: RepositoryInfo): String = {
     val issue = getIssue(repository.owner, repository.name, issueId.toString).get
 
-    JsonFormat(
+    gitbucket.core.api.JsonFormat(
       ApiIssueKanban(
         issue,
         getIssueLabels(repository.owner, repository.name, issue.issueId),
